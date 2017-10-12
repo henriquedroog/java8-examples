@@ -104,4 +104,46 @@ public class AppTest {
 		assertThat(result, contains("C1","C2"));
 		assertThat(result, not(contains("c1","c2")));
 	}
+	
+	@Test
+	public void testStreamFilter_ByObject() {
+		System.out.println("AppTest.testStreamFilter_FilterObject");
+		SimpleDTO obj1 = new SimpleDTO(1, "Um");
+		SimpleDTO obj2 = new SimpleDTO(2, "Dois");
+		List<SimpleDTO> myList = Arrays.asList(obj1, obj2);
+		
+		List<SimpleDTO> result = myList
+			.stream()
+			.filter(s -> s.getId() <= 1)
+			.sorted()
+			.collect(Collectors.toList());
+		
+		assertThat(result, contains(obj1));
+		assertThat(result, not(contains(obj2)));
+		assertThat(result.stream().allMatch(d-> d.equals(obj1)),is(true));
+	}
+	
+	@Test
+	public void testStreamFilter_AllMatch() {
+		System.out.println("AppTest.testStreamFilter_AllMatch");
+		SimpleDTO obj1 = new SimpleDTO(1, "Um");
+		SimpleDTO obj2 = new SimpleDTO(2, "Um");
+		List<SimpleDTO> myList = Arrays.asList(obj1, obj2);
+		
+		assertThat(myList.stream().allMatch(d-> d.getId() <= 1),is(false));
+		assertThat(myList.stream().allMatch(d-> d.getTitle().equals("Um")),is(true));
+	}
+	
+	@Test
+	public void testStreamFilter_AnyMatch() {
+		System.out.println("AppTest.testStreamFilter_AnyMatch");
+		SimpleDTO obj1 = new SimpleDTO(1, "Um");
+		SimpleDTO obj2 = new SimpleDTO(2, "Dois");
+		List<SimpleDTO> myList = Arrays.asList(obj1, obj2);
+				
+		assertThat(myList.stream().anyMatch(d-> d.getId() <= 1),is(true));
+		assertThat(myList.stream().anyMatch(d-> d.getTitle().equals("Dois")),is(true));
+		assertThat(myList.stream().anyMatch(d-> d.equals(obj1)),is(true));
+		assertThat(myList.stream().anyMatch(d-> d.equals(new SimpleDTO(3, "tres"))),is(false));
+	}
 }
